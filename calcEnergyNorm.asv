@@ -1,0 +1,17 @@
+function err = calcEnergyNorm(w_exact, w_approx, x, q)
+%CALCENERGYNORM Summary of this function goes here
+    F = 40; % newton 
+    L = 0.1; % meter, 100 mm in doc
+    E = 210e9; % Young modulus N/m^2
+    Iy = 1/12*0.01^4; % area moment
+
+
+    dx = mean(x(2:end) - x(1:end-1));
+    w_diff = w_exact - w_approx;
+    w_diff_xx = diff(diff(w_diff, dx), dx);
+    integrant = 0.5*E*Iy*w_diff_xx - q.*w_diff;
+   
+
+
+end
+

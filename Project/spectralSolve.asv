@@ -1,0 +1,35 @@
+function [U, x] = spectralSolve(nx, totL)
+%SPECTRALSOLVE Solving 1D poisson equation with periodic BC (i.e., -u_xx = f) 
+% using spectral method
+% Input:
+%       nk [double]: nimber of wavenumbers
+%       xl [double]: x location of the left boundary
+%       totL [double]: total length of the domain, i.e., 2L
+%       h [double]: spatial grid interval to differential the forcing
+%       function
+
+
+    if mod(nx,2) ~= 0
+        error('Number of wavenubmer has to be an even number!')
+    end
+
+    % construct spatial grid 
+    x = linspace(-totL/2, totL/2, nx);
+    func = @(x) exp(-x.^2) - sqrt(pi)/(totL);
+        
+    % wavenumber k: 2pi*ki/L
+    ni = 1:length(x);
+    ni = ni - ni(end)/2;
+    kn = ni*2*pi/totL;
+    id_zero = find(ni==0);
+    Frho = fftshift(fft(func(x)));
+    % remove k=0 case (as its corresponding \rho is 0 anyways)
+    Frho(id_zero) = [];
+    kn(id_zero) = [];
+    Fu = Frho./(kn.^2);
+
+    % take inverse FFT
+    U = ifft(ifftshift(Fu));
+
+end
+
